@@ -16,6 +16,7 @@ export function enableEffects(applyMiddleware, opts = {}) {
       let currentReducer = defaultReducer;
       let store;
 
+      /*
       const listeners = [];
       let pendingListen = false;
 
@@ -48,6 +49,7 @@ export function enableEffects(applyMiddleware, opts = {}) {
           listeners.slice().forEach(listener => listener());
         }
       }
+      */
 
 
       function unliftReducer(reducer) {
@@ -88,7 +90,7 @@ export function enableEffects(applyMiddleware, opts = {}) {
 
           // After we run effects maybe we discarded norification for listeners
           // so we will try run them again
-          notifyListenersIfNeeded();
+          // notifyListenersIfNeeded();
 
           // we will return same thing to keep compatibility
           return ret;
@@ -100,7 +102,7 @@ export function enableEffects(applyMiddleware, opts = {}) {
 
       return {
         ...store,
-        subscribe,
+    //    subscribe,
         getReducer,
         replaceReducer
       };
