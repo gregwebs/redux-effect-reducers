@@ -4,7 +4,7 @@ export function StateAndEffect(state, ...effects) {
   this.state = state;
 }
 
-export function withSideEffect(state, ...effects) {
+export function withEffect(state, ...effects) {
   if (state instanceof StateAndEffect) {
     return new StateAndEffect(state.state, ...effects);
   }

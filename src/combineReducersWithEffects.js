@@ -1,4 +1,4 @@
-import { StateAndEffect, withSideEffect } from './sideEffects';
+import { StateAndEffect, withEffect } from './sideEffects';
 
 function mapValues(obj, fn) {
   return Object.keys(obj).reduce((result, key) => {
@@ -23,20 +23,20 @@ export function combineReducersWithEffects(reducers) {
   let defaultState = mapValues(finalReducers, () => undefined);
 
   return function combination(state = defaultState, action) {
-    let sideEffects = [];
+    let effects = [];
     let finalState = mapValues(finalReducers, (reducer, key) => {
       let newState = reducer(state[key], action);
 
       if (newState instanceof StateAndEffect) {
-        sideEffects.push(...(newState.effects));
+        effects.push(...(newState.effects));
         return newState.state;
       }
       return newState;
     });
 
 
-    if (sideEffects.length) {
-      return withSideEffect(finalState, ...sideEffects);
+    if (effects.length) {
+      return withEffect(finalState, ...effects);
     }
     return finalState;
   };

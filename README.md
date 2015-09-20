@@ -14,12 +14,12 @@ don't use it in production. API may change at any time.
 With this plugin signature of reducer is changed to 
 
 ```js 
-  (state, action) => newState | withSideEffect(newState, effect1, effect2, ...)
+  (state, action) => newState | withEffect(newState, effect1, effect2, ...)
 ```
 
 So simple example for logging user without async action creator will look this way
 ```js
-import {withSideEffect} from 'redux-effect-reducers'
+import {withEffect} from 'redux-effect-reducers'
 
 function loadUser(dispach) {
   ajax('url_to_load_user')
@@ -38,7 +38,7 @@ function reducer(state = defaultState, action) {
     case LOGIN_USER:
       new_state = ... // set state of user to loading
       // ! NOTICE that i don’t run this function just passing it as effect
-      return withSideEffect(newState, loadUser)
+      return withEffect(newState, loadUser)
     case LOGIN_SUCCESSFULL:
       new_state = ... // set state of user to logged
       return new_state;
@@ -194,7 +194,7 @@ userReducer(state, action) {
   ...
   case LOG_USER:
     //set state to logging
-    return withSideEffect(newState, logUser)
+    return withEffect(newState, logUser)
   ...
 }
 
@@ -210,7 +210,7 @@ widget1Reducer(state, action) {
   case USER_SUCCESFULLY_LOGGED:
     if (i_need_aditional_data_for_this_widget) {
       //set loading to state
-      return withSideEffect(newState, loadWidget1DataForLoggedUser)
+      return withEffect(newState, loadWidget1DataForLoggedUser)
     } else {
       return state;
     }

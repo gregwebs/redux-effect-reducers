@@ -1,9 +1,9 @@
-import {withSideEffect} from './sideEffects';
+import {withEffect} from './sideEffects';
 import {enableEffects} from './enableEffects';
 import {combineReducersWithEffects} from './combineReducersWithEffects';
 
 export {
-  withSideEffect,
+  withEffect,
   enableEffects,
   combineReducersWithEffects,
 };
