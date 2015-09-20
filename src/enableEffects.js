@@ -2,7 +2,9 @@ import { StateAndEffect } from './sideEffects';
 
 const REPLAY_HAPPENED = Symbol('replayHappened');
 
-export function enableEffects(applyMiddleware) {
+export function enableEffects(applyMiddleware, opts = {}) {
+  var DEBUG = opts.debug || true
+
   return (...middlewares) => {
     return nextStoreEnhancer => (defaultReducer, initialState) => {
       // Here we will collect all actions that need to be runned after original
@@ -20,11 +22,11 @@ export function enableEffects(applyMiddleware) {
       function subscribe(listener) {
         function abordableListener() {
           if (pendingEffects.length === 0) {
-            console.log('injected listener will be called');
+            if (DEBUG) { console.log('injected listener will be called'); }
             listener();
             pendingListen = false;
           } else {
-            console.warn('skip listeners we have pending effects: ', pendingEffects);
+            if (DEBUG) { console.warn('skip listeners we have pending effects: ', pendingEffects); }
             pendingListen = true;
           }
         }
@@ -41,7 +43,7 @@ export function enableEffects(applyMiddleware) {
 
       function notifyListenersIfNeeded() {
         if (pendingListen && (pendingEffects.length === 0)) {
-          console.log('performSideEffectsMiddleware call pending listeners');
+          if (DEBUG) { console.log('performSideEffectsMiddleware call pending listeners'); }
           pendingListen = false;
           listeners.slice().forEach(listener => listener());
         }
@@ -53,7 +55,7 @@ export function enableEffects(applyMiddleware) {
           const newState = reducer(state, action);
           if (newState instanceof StateAndEffect) {
             if (!action[REPLAY_HAPPENED]) {
-              console.log('adding side effect ', newState.effects);
+              if (DEBUG) { console.log('adding side effect ', newState.effects); }
               pendingEffects.push(...(newState.effects));
               action[REPLAY_HAPPENED] = true;
             }
@@ -73,14 +75,14 @@ export function enableEffects(applyMiddleware) {
 
       function performSideEffectsMiddleware() { // this function can take {dispatch, getState} as argument
         return next => action => {
-          console.log('performSideEffectsMiddleware dispatch happened with:', JSON.stringify(action), action);
+          if (DEBUG) { console.log('performSideEffectsMiddleware dispatch happened with:', JSON.stringify(action), action); }
           // we dispatch normaly action to next middleware
           const ret = next(action);
           // after dispatch we check if we have effects to run and if yes than
           // we will dispatch them. That mean that they will go back trough
           // this function
           while (pendingEffects.length > 0) {
-            console.log('performSideEffectsMiddleware removing side effect ');
+            if (DEBUG) { console.log('performSideEffectsMiddleware removing side effect '); }
             next(pendingEffects.shift());
           }
 
