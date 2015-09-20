@@ -16,41 +16,7 @@ export function enableEffects(applyMiddleware, opts = {}) {
       let currentReducer = defaultReducer;
       let store;
 
-      /*
-      const listeners = [];
-      let pendingListen = false;
-
-      function subscribe(listener) {
-        function abordableListener() {
-          if (pendingEffects.length === 0) {
-            if (DEBUG) { console.log('injected listener will be called'); }
-            listener();
-            pendingListen = false;
-          } else {
-            if (DEBUG) { console.warn('skip listeners we have pending effects: ', pendingEffects); }
-            pendingListen = true;
-          }
-        }
-        listeners.push(listener);
-
-        const originalUnsubscribe = store.subscribe(abordableListener);
-
-        return function unsubscribe() {
-          originalUnsubscribe();
-          const index = listeners.indexOf(listener);
-          listeners.splice(index, 1);
-        };
-      }
-
-      function notifyListenersIfNeeded() {
-        if (pendingListen && (pendingEffects.length === 0)) {
-          if (DEBUG) { console.log('performSideEffectsMiddleware call pending listeners'); }
-          pendingListen = false;
-          listeners.slice().forEach(listener => listener());
-        }
-      }
-      */
-
+      function subscribe(listener) { return store.subscribe(listener) }
 
       function unliftReducer(reducer) {
         return (state, action) => {
@@ -88,10 +54,6 @@ export function enableEffects(applyMiddleware, opts = {}) {
             next(pendingEffects.shift());
           }
 
-          // After we run effects maybe we discarded norification for listeners
-          // so we will try run them again
-          // notifyListenersIfNeeded();
-
           // we will return same thing to keep compatibility
           return ret;
         };
@@ -102,7 +64,7 @@ export function enableEffects(applyMiddleware, opts = {}) {
 
       return {
         ...store,
-    //    subscribe,
+        subscribe,
         getReducer,
         replaceReducer
       };
